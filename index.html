@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RunPod Qwen Prompt Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 600px;
+        }
+        h2 {
+            margin-top: 0;
+            color: #38bdf8;
+            font-size: 24px;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+        textarea {
+            width: 100%;
+            height: 80px;
+            background-color: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            color: #f8fafc;
+            padding: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #38bdf8;
+        }
+        .output-box {
+            margin-top: 20px;
+            position: relative;
+        }
+        .command-display {
+            background-color: #020617;
+            border: 1px solid #334155;
+            padding: 15px;
+            padding-right: 80px;
+            border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            color: #4ade80;
+            white-space: pre-wrap;
+            word-break: break-all;
+            min-height: 20px;
+        }
+        button {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            background-color: #38bdf8;
+            color: #0f172a;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #0ea5e9;
+        }
+        button.copied {
+            background-color: #4ade80;
+            color: #020617;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Qwen-Image Command Builder</h2>
+    
+    <label for="promptInput">1. Type your visual prompt:</label>
+    <textarea id="promptInput" placeholder="e.g., cyberpunk astronaut on Mars..." oninput="updateCommand()"></textarea>
+    
+    <div class="output-box">
+        <label>2. Copy & paste this into your RunPod Terminal:</label>
+        <div class="command-display" id="commandOutput">python /workspace/generate.py ''</div>
+        <button id="copyBtn" onclick="copyToClipboard()">Copy</button>
+    </div>
+</div>
+
+<script>
+    function updateCommand() {
+        const promptText = document.getElementById('promptInput').value;
+        // Escape single quotes inside the prompt to prevent breaking bash syntax
+        const escapedPrompt = promptText.replace(/'/g, "'\\''");
+        const fullCommand = `python /workspace/generate.py '${escapedPrompt}'`;
+        document.getElementById('commandOutput').innerText = fullCommand;
+    }
+
+    function copyToClipboard() {
+        const commandText = document.getElementById('commandOutput').innerText;
+        
+        navigator.clipboard.writeText(commandText).then(() => {
+            const copyBtn = document.getElementById('copyBtn');
+            copyBtn.innerText = 'Copied!';
+            copyBtn.classList.add('copied');
+            
+            setTimeout(() => {
+                copyBtn.innerText = 'Copy';
+                copyBtn.classList.remove('copied');
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy text: ', err);
+        });
+    }
+    
+    // Run once on load to show empty state format
+    updateCommand();
+</script>
+
+</body>
+</html>
